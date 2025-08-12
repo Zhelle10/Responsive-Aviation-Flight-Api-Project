@@ -1,0 +1,23 @@
+/* General app container */
+.app-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1rem;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+}
+.search-results-list li{
+    font-family: Arial, sans-serif;
+    margin-left: 2rem;
+    font-size: 1rem;
+    padding: 0;
+}
+
+
+/* Responsive */
+@media (max-width: 480px) {
+    .app-container {
+        padding: 0.5rem;
+    }
+    
+}

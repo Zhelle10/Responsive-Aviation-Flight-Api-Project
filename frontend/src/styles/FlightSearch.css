@@ -1,0 +1,74 @@
+h2 {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 1.5rem;
+    color: #1976d2;
+}
+
+.flight-search-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem auto;
+    max-width: 800px;
+    padding: 0.5rem;
+}
+
+.flight-search-input,
+.flight-search-date {
+    flex: 1 1 200px;
+    min-width: 150px;
+    padding: 0.6rem 0.8rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.flight-search-input:focus,
+.flight-search-date:focus {
+    border-color: #1976d2;
+}
+
+.flight-search-button {
+    background-color: #1976d2;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.flight-search-button:hover {
+    background-color: #115293;
+}
+
+/* Responsive layout for mobile */
+@media (max-width: 480px) {
+    .flight-search-form {
+        flex-direction: column;
+        align-items: center;
+        max-width: 5rem;
+        /* limits the size */
+        max-height: 3rempx;
+        margin: 0 auto;
+        /* centers it */
+        padding: 0.5rem;
+        margin-left: 2rem;
+    }
+
+    .flight-search-input,
+    .flight-search-date,
+    .flight-search-button {
+        width: 100%;
+        font-size: 0.95rem;
+        padding: 0.5rem;
+        /* smaller padding */
+    }
+}

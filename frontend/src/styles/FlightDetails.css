@@ -1,0 +1,46 @@
+.flight-details {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 1.2rem;
+    margin: 1rem auto;
+    max-width: 600px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.flight-details h2 {
+    text-align: center;
+    color: #1976d2;
+    margin-bottom: 1rem;
+}
+
+.flight-details p {
+    font-size: 1rem;
+    margin: 0.4rem 0;
+    line-height: 1.4;
+}
+
+.flight-details strong {
+    color: #333;
+}
+
+/* Highlight flight status */
+.flight-details p:last-child {
+    font-weight: bold;
+    color: #444;
+}
+
+/* Mobile-friendly layout */
+@media (max-width: 480px) {
+    .flight-details {
+        padding: 1rem;
+        margin: 0.8rem;
+    }
+
+    .flight-details h2 {
+        font-size: 1.3rem;
+    }
+
+    .flight-details p {
+        font-size: 0.95rem;
+    }
+}
