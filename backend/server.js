@@ -4,9 +4,11 @@ const { open } = require("sqlite");
 const cors = require("cors");
 const errorHandler = require("./errorHandler");
 const fetchFlight = require("./fetchFlight"); // import the handler
+const deleteFlight = require("./deleteFlight"); // import delete handler
 
 const app = express();
 app.use(cors());
+app.use(express.json()); // needed for parsing JSON if we later use POST/PUT
 
 async function start() {
   const db = await open({
@@ -33,9 +35,10 @@ async function start() {
     next();
   });
 
-  // Use the imported fetchFlight handler here
+  // Fetch flight route
   app.get("/fetch-flight/:flightNumber", fetchFlight);
 
+  // Search flights
   app.get("/search", async (req, res, next) => {
     const { flightNumber, date } = req.query;
     let query = `SELECT * FROM flights WHERE 1=1`;
@@ -58,14 +61,16 @@ async function start() {
     }
   });
 
-  // Test route to simulate 400 error for testing error handler
+  // Delete flight by id
+  app.delete("/flights/:id", deleteFlight);
+
+  // Test route to simulate 400 error
   app.get("/fetch-flight", (req, res, next) => {
     console.log("Test-400 route called"); // DEBUG
     const err = new Error("This requires a flight number");
     err.status = 400;
     next(err);
   });
-  
 
   // Error handler middleware must come last
   app.use(errorHandler);
