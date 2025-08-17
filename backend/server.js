@@ -1,10 +1,11 @@
+
+require("dotenv").config();
 const express = require("express");
 const sqlite3 = require("sqlite3");
 const { open } = require("sqlite");
 const cors = require("cors");
 const errorHandler = require("./errorHandler");
 const fetchFlight = require("./fetchFlight"); // import the handler
-const deleteFlight = require("./deleteFlight"); // import delete handler
 
 const app = express();
 app.use(cors());
@@ -35,7 +36,7 @@ async function start() {
     next();
   });
 
-  // Fetch flight route
+  // Fetch flight route (saves new flight from API)
   app.get("/fetch-flight/:flightNumber", fetchFlight);
 
   // Search flights
@@ -61,12 +62,8 @@ async function start() {
     }
   });
 
-  // Delete flight by id
-  app.delete("/flights/:id", deleteFlight);
-
   // Test route to simulate 400 error
   app.get("/fetch-flight", (req, res, next) => {
-    console.log("Test-400 route called"); // DEBUG
     const err = new Error("This requires a flight number");
     err.status = 400;
     next(err);

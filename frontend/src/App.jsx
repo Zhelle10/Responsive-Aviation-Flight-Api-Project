@@ -11,21 +11,6 @@ export default function App() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Delete flight function
-  const deleteFlight = async (id) => {
-    try {
-      const res = await fetch(`http://localhost:3001/flights/${id}`, { method: "DELETE" });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error?.message || "Failed to delete flight");
-      }
-      // Remove deleted flight from state
-      setSearchResults(searchResults.filter(f => f.id !== id));
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
   return (
     <div className="app-container">
       <h1>Flight App</h1>
@@ -45,7 +30,6 @@ export default function App() {
               <span>
                 {f.flight_number} — {f.airline} — {f.departure_airport} to {f.arrival_airport} — {f.status} — {f.flight_date}
               </span>
-              <button className="delete-button" onClick={() => deleteFlight(f.id)}>Delete</button>
             </li>
           ))}
         </ul>
