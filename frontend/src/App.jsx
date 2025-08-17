@@ -13,7 +13,7 @@ export default function App() {
 
   return (
     <div className="app-container">
-      <h1>Flight App</h1>
+      <h1>Flight tracker </h1>
       <FlightLookup setFlight={setFlight} setError={setError} setLoading={setLoading} />
       {error && <ErrorMessage message={error} />}
       {loading && <p>Loading...</p>}
