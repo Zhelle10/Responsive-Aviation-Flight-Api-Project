@@ -10,7 +10,7 @@
 }
 
 /* Responsive */
-@media (max-width: 600px) {
+@media (max-width: 400px) {
     .error-message {
         font-size: 0.9rem;
         padding: 0.5rem 0.75rem;
