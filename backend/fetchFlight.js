@@ -25,7 +25,7 @@ async function fetchFlight(req, res, next) {
 
     const f = json.data[0];
 
-    // Flatten to match DB + frontend expectations
+    // Flatten to match frontend expectations
     const flightData = {
       flight_date: f.flight_date,
       flight_number: f.flight.iata,
@@ -35,20 +35,7 @@ async function fetchFlight(req, res, next) {
       status: f.flight_status,
     };
 
-    await req.db.run(
-      `INSERT INTO flights (flight_date, flight_number, airline, departure_airport, arrival_airport, status)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [
-        flightData.flight_date,
-        flightData.flight_number,
-        flightData.airline,
-        flightData.departure_airport,
-        flightData.arrival_airport,
-        flightData.status,
-      ]
-    );
-
-    res.json({ message: "Flight saved", flight: flightData });
+    res.json({ flight: flightData });
   } catch (error) {
     next(error);
   }

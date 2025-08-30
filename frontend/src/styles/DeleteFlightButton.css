@@ -1,0 +1,36 @@
+.delete-flight-button {
+    background-color: #e63946;
+    /* red but not too harsh */
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Hover effect */
+.delete-flight-button:hover {
+    background-color: #c62828;
+    transform: scale(1.05);
+}
+
+/* Active press effect */
+.delete-flight-button:active {
+    background-color: #b71c1c;
+    transform: scale(0.95);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+    .delete-flight-button {
+        padding: 5px 8px;
+        font-size: 0.8rem;
+        margin-left: 6px;
+        border-radius: 5px;
+    }
+}

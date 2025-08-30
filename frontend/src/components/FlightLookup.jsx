@@ -17,6 +17,11 @@ export default function FlightLookup({ setFlight, setError, setLoading }) {
             }
             const data = await res.json();
             setFlight(data.flight);
+
+            // ✅ Save flight to localStorage
+            const savedFlights = JSON.parse(localStorage.getItem("flights")) || [];
+            savedFlights.push(data.flight);
+            localStorage.setItem("flights", JSON.stringify(savedFlights));
         } catch (err) {
             setError(err.message);
         } finally {

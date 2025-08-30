@@ -5,26 +5,28 @@ export default function FlightSearch({ setSearchResults, setError, setLoading })
     const [searchNumber, setSearchNumber] = useState("");
     const [searchDate, setSearchDate] = useState("");
 
-    const searchFlights = async (e) => {
+    const searchFlights = (e) => {
         e.preventDefault();
         setLoading(true);
         setError("");
         setSearchResults([]);
 
         try {
-            let query = [];
-            if (searchNumber.trim()) query.push(`flightNumber=${encodeURIComponent(searchNumber)}`);
-            if (searchDate.trim()) query.push(`date=${encodeURIComponent(searchDate)}`);
+            const savedFlights = JSON.parse(localStorage.getItem("flights")) || [];
 
-            const res = await fetch(`http://localhost:3001/search?${query.join("&")}`);
-            if (!res.ok) {
-                const data = await res.json();
-                throw new Error(data.error?.message || "Failed to search flights");
+            let filtered = savedFlights;
+            if (searchNumber.trim()) {
+                filtered = filtered.filter(f =>
+                    f.flight_number.toLowerCase() === searchNumber.toLowerCase()
+                );
             }
-            const data = await res.json();
-            setSearchResults(data);
+            if (searchDate.trim()) {
+                filtered = filtered.filter(f => f.flight_date === searchDate);
+            }
+
+            setSearchResults(filtered);
         } catch (err) {
-            setError(err.message);
+            setError("Failed to search saved flights");
         } finally {
             setLoading(false);
         }

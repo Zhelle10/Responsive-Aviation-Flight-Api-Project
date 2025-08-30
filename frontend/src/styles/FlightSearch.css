@@ -50,26 +50,3 @@ h2 {
     background-color: #115293;
 }
 
-/* Responsive layout for mobile */
-@media (max-width: 480px) {
-    .flight-search-form {
-        flex-direction: column;
-        align-items: center;
-        max-width: 5rem;
-        /* limits the size */
-        max-height: 3rempx;
-        margin: 0 auto;
-        /* centers it */
-        padding: 0.5rem;
-        margin-left: 2rem;
-    }
-
-    .flight-search-input,
-    .flight-search-date,
-    .flight-search-button {
-        width: 100%;
-        font-size: 0.95rem;
-        padding: 0.5rem;
-        /* smaller padding */
-    }
-}
