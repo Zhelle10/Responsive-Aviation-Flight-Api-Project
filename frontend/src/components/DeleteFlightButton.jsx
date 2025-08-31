@@ -1,4 +1,3 @@
-// DeleteFlightButton.jsx
 import "../styles/DeleteFlightButton.css";
 
 export default function DeleteFlightButton({ onDelete }) {

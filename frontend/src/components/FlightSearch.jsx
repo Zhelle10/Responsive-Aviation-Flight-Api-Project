@@ -7,43 +7,50 @@ export default function FlightSearch() {
     const [searchDate, setSearchDate] = useState("");
     const [filteredFlights, setFilteredFlights] = useState([]);
 
-    // Normalize ISO date
-    const normalizeDate = (d) => d?.includes("T") ? d.split("T")[0] : d;
+    const normalizeDate = (date) => (date?.includes("T") ? date.split("T")[0] : date);
 
-    // Load all flights on mount
-    useEffect(() => {
-        handleSearch(); // automatically show saved flights
-    }, []);
+    // Load flights from localStorage
+    const loadFlights = () => {
+        const savedFlights = JSON.parse(localStorage.getItem("flights")) || [];
+        return savedFlights.map((f) => ({ ...f, flight_date: normalizeDate(f.flight_date) }));
+    };
 
-    // Filter flights from localStorage
+    // Filter flights based on search inputs
     const handleSearch = (e) => {
         if (e) e.preventDefault();
-        const savedFlights = JSON.parse(localStorage.getItem("flights")) || [];
-        let results = savedFlights.map(f => ({ ...f, flight_date: normalizeDate(f.flight_date) }));
+        let results = loadFlights();
 
         if (searchNumber.trim()) {
-            results = results.filter(f =>
-                f.flight_number?.toLowerCase() === searchNumber.trim().toLowerCase()
+            results = results.filter(
+                (f) => f.flight_number.toLowerCase() === searchNumber.trim().toLowerCase()
             );
         }
 
         if (searchDate.trim()) {
-            results = results.filter(f => normalizeDate(f.flight_date) === searchDate);
+            results = results.filter((f) => normalizeDate(f.flight_date) === searchDate);
         }
 
         setFilteredFlights(results);
     };
 
-    // Delete flight from localStorage & refresh list
+    // Delete flight
     const handleDelete = (flightToDelete) => {
-        let savedFlights = JSON.parse(localStorage.getItem("flights")) || [];
-        savedFlights = savedFlights.filter(f =>
-            !(f.flight_number === flightToDelete.flight_number &&
-                normalizeDate(f.flight_date) === normalizeDate(flightToDelete.flight_date))
+        let savedFlights = loadFlights();
+        savedFlights = savedFlights.filter(
+            (f) =>
+                !(
+                    f.flight_number === flightToDelete.flight_number &&
+                    normalizeDate(f.flight_date) === normalizeDate(flightToDelete.flight_date)
+                )
         );
         localStorage.setItem("flights", JSON.stringify(savedFlights));
-        handleSearch(); // refresh filtered list
+        handleSearch(); // Refresh filtered list
     };
+
+    // Load flights on mount
+    useEffect(() => {
+        handleSearch();
+    }, []);
 
     return (
         <>
@@ -62,7 +69,9 @@ export default function FlightSearch() {
                     onChange={(e) => setSearchDate(e.target.value)}
                     className="flight-search-date"
                 />
-                <button type="submit" className="flight-search-button">Search</button>
+                <button type="submit" className="flight-search-button">
+                    Search
+                </button>
             </form>
 
             <h3>Saved Flights:</h3>
@@ -72,12 +81,7 @@ export default function FlightSearch() {
                     <li key={`${f.flight_number}_${f.flight_date}_${idx}`}>
                         {f.flight_number} - {f.airline} - {normalizeDate(f.flight_date)} (
                         {f.departure_airport} → {f.arrival_airport}) - {f.status}{" "}
-                        <DeleteFlightButton
-                            flight={f}
-                            index={idx}
-                            flights={filteredFlights}
-                            setFlights={() => handleDelete(f)}
-                        />
+                        <DeleteFlightButton onDelete={() => handleDelete(f)} />
                     </li>
                 ))}
             </ul>
