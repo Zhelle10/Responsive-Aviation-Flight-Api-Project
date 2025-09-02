@@ -81,7 +81,6 @@ AVIATION-TRACK-PROJ
 ## Features
 
 - Search saved flights by flight number and date  
-- Filter flights dynamically  
 - Delete saved flights  
 - Store flight data in `localStorage` for quick access  
 - Backend API handles flight data requests  
