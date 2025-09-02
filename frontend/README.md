@@ -59,6 +59,8 @@ AVIATION-TRACK-PROJ
   main.jsx
   setuptests.js
   .gitignore 
+  README.md
+  vite.config.js
 
 
   I hid the API key inside the .env and then put it inside .gitignore so It would not be visible on github.
