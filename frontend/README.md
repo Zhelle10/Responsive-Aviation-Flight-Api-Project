@@ -27,42 +27,62 @@ With more time, I would improve the UI and user experience, add more styling and
 I learned how to connect frontend and backend, manage state in React, store and filter data in localStorage, and write tests for React components. This knowledge will help me in future projects to build full-stack web apps that are interactive, reliable, and easier to maintain.
 
 
+# AVIATION-TRACK-PROJ
+
+A simple flight management web application built with **React** on the frontend and **Node.js** on the backend. Users can search, filter, and delete saved flights. The backend is fully functional and provides flight data via API requests.
+
+---
+
+## Project Structure
+
 AVIATION-TRACK-PROJ
- -backend
-  node_modules
-  .env
-  errorHandler.js
-  fetchFlight.js
-  server.js
- -frontend
-  src
-  __tests__
-   DeleteFlightButton.test.jsx
-   ErrorMessage.test.jsx
-   FlightDetails.test.jsx
-   FlightLookup.test.jsx
-   FlightSearch.test.jsx
-  components
-   DeleteFlightButton.jsx
-   ErrorMessage.jsx
-   FlightDetails.jsx
-   FlightLookup.jsx
-   FlightSearch.jsx
-  styles
-   DeleteFlightButton.css
-   ErrorMessage.css
-   FlightDetails.css
-   FlightLookup.css
-   FlightSearch.css
-  App.jsx
-  Index.css
-  main.jsx
-  setuptests.js
-  .gitignore 
-  README.md
-  vite.config.js
+├── backend
+│ ├── node_modules
+│ ├── .env
+│ ├── errorHandler.js
+│ ├── fetchFlight.js
+│ └── server.js
+└── frontend
+├── src
+│ ├── tests
+│ │ ├── DeleteFlightButton.test.jsx
+│ │ ├── ErrorMessage.test.jsx
+│ │ ├── FlightDetails.test.jsx
+│ │ ├── FlightLookup.test.jsx
+│ │ └── FlightSearch.test.jsx
+│ ├── components
+│ │ ├── DeleteFlightButton.jsx
+│ │ ├── ErrorMessage.jsx
+│ │ ├── FlightDetails.jsx
+│ │ ├── FlightLookup.jsx
+│ │ └── FlightSearch.jsx
+│ ├── styles
+│ │ ├── DeleteFlightButton.css
+│ │ ├── ErrorMessage.css
+│ │ ├── FlightDetails.css
+│ │ ├── FlightLookup.css
+│ │ └── FlightSearch.css
+│ ├── App.jsx
+│ ├── Index.css
+│ ├── main.jsx
+│ └── setuptests.js
+├── .gitignore
+├── README.md
+└── vite.config.js
 
+## How to Run
 
-  I hid the API key inside the .env and then put it inside .gitignore so It would not be visible on github.
-    
-      
+1. Clone the repository  
+2. Install dependencies in both `backend` and `frontend` folders  
+3. Start the backend server  
+4. Start the frontend development server  
+5. Open the app in your browser at `http://localhost:5173` 
+
+## Features
+
+- Search saved flights by flight number and date  
+- Filter flights dynamically  
+- Delete saved flights  
+- Store flight data in `localStorage` for quick access  
+- Backend API handles flight data requests  
+- Basic testing with React Testing Library  
