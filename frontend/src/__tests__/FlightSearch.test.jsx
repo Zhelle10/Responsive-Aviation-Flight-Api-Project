@@ -1,97 +1,82 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import FlightSearch from "../components/FlightSearch"; // adjust path if needed
-import { vi } from "vitest";
+// Mock DeleteFlightButton to avoid dependency
+vi.mock("../components/DeleteFlightButton", () => ({
+    default: ({ onDelete }) => (
+        <button onClick={onDelete} data-testid="delete-btn">Delete</button>
+    ),
+}));
 
-describe("FlightSearch Component", () => {
-    let setSearchResults;
-    let setError;
-    let setLoading;
+import { render, screen, fireEvent } from "@testing-library/react";
+import FlightSearch from "../components/FlightSearch";
 
+describe("<FlightSearch />", () => {
     beforeEach(() => {
-        setSearchResults = vi.fn();
-        setError = vi.fn();
-        setLoading = vi.fn();
-
-        global.fetch = vi.fn();
+        localStorage.clear();
     });
 
-    afterEach(() => {
-        vi.resetAllMocks();
+    it("renders with no saved flights", () => {
+        render(<FlightSearch />);
+        expect(screen.getByText(/No saved flights/i)).toBeInTheDocument();
     });
 
-    it("performs a successful search", async () => {
-        const fakeData = [
+    it("displays flights from localStorage", () => {
+        const flights = [
             {
                 flight_number: "AB123",
-                airline: "AirTest",
-                departure_airport: "AAA",
-                arrival_airport: "BBB",
+                airline: "Air Test",
+                departure_airport: "JFK",
+                arrival_airport: "LAX",
                 status: "On Time",
-                flight_date: "2025-08-16",
+                flight_date: "2025-09-01T00:00:00Z",
             },
         ];
+        localStorage.setItem("flights", JSON.stringify(flights));
 
-        global.fetch.mockResolvedValueOnce({
-            ok: true,
-            json: async () => fakeData,
-        });
-
-        render(
-            <FlightSearch
-                setSearchResults={setSearchResults}
-                setError={setError}
-                setLoading={setLoading}
-            />
-        );
-
-        // get inputs
-        const flightInput = screen.getByPlaceholderText("Flight Number");
-        const dateInput = screen.getByRole("textbox", { name: "" }) || screen.getByDisplayValue("");
-        const searchButton = screen.getByRole("button", { name: /search/i });
-
-        // fill inputs
-        fireEvent.change(flightInput, { target: { value: "AB123" } });
-        fireEvent.change(screen.getByDisplayValue(""), { target: { value: "2025-08-16" } });
-
-        // submit form
-        fireEvent.click(searchButton);
-
-        // wait for fetch to be called
-        await waitFor(() => {
-            expect(global.fetch).toHaveBeenCalledWith(
-                "http://localhost:3001/search?flightNumber=AB123&date=2025-08-16"
-            );
-        });
-
-        // verify callbacks
-        await waitFor(() => {
-            expect(setSearchResults).toHaveBeenCalledWith(fakeData);
-            expect(setError).not.toHaveBeenCalled();
-            expect(setLoading).toHaveBeenCalledTimes(2); // true + false
-        });
+        render(<FlightSearch />);
+        expect(screen.getByText(/AB123 - Air Test/i)).toBeInTheDocument();
     });
 
-    it("shows error when fetch fails", async () => {
-        global.fetch.mockResolvedValueOnce({
-            ok: false,
-            json: async () => ({ error: { message: "Flight not found" } }),
-        });
+    it("filters flights by number", () => {
+        const flights = [
+            { flight_number: "AB123", airline: "Air Test", flight_date: "2025-09-01", departure_airport: "JFK", arrival_airport: "LAX", status: "On Time" },
+            { flight_number: "CD456", airline: "FlyHigh", flight_date: "2025-09-01", departure_airport: "SFO", arrival_airport: "ORD", status: "Delayed" },
+        ];
+        localStorage.setItem("flights", JSON.stringify(flights));
 
-        render(
-            <FlightSearch
-                setSearchResults={setSearchResults}
-                setError={setError}
-                setLoading={setLoading}
-            />
-        );
+        render(<FlightSearch />);
+        fireEvent.change(screen.getByLabelText(/Flight Number/i), { target: { value: "AB123" } });
+        fireEvent.click(screen.getByRole("button", { name: /Search/i }));
 
-        fireEvent.change(screen.getByPlaceholderText("Flight Number"), { target: { value: "XYZ" } });
-        fireEvent.click(screen.getByRole("button", { name: /search/i }));
+        expect(screen.getByText(/AB123 - Air Test/i)).toBeInTheDocument();
+        expect(screen.queryByText(/CD456 - FlyHigh/i)).not.toBeInTheDocument();
+    });
 
-        await waitFor(() => {
-            expect(setError).toHaveBeenCalledWith("Flight not found");
-            expect(setSearchResults).not.toHaveBeenCalled();
-            expect(setLoading).toHaveBeenCalledTimes(2);
-        });
+    it("filters flights by date", () => {
+        const flights = [
+            { flight_number: "AB123", airline: "Air Test", flight_date: "2025-09-01", departure_airport: "JFK", arrival_airport: "LAX", status: "On Time" },
+            { flight_number: "CD456", airline: "FlyHigh", flight_date: "2025-09-02", departure_airport: "SFO", arrival_airport: "ORD", status: "Delayed" },
+        ];
+        localStorage.setItem("flights", JSON.stringify(flights));
+
+        render(<FlightSearch />);
+        fireEvent.change(screen.getByLabelText(/Date/i), { target: { value: "2025-09-01" } });
+        fireEvent.click(screen.getByRole("button", { name: /Search/i }));
+
+        expect(screen.getByText(/AB123 - Air Test/i)).toBeInTheDocument();
+        expect(screen.queryByText(/CD456 - FlyHigh/i)).not.toBeInTheDocument();
+    });
+
+    it("deletes a flight", () => {
+        const flights = [
+            { flight_number: "AB123", airline: "Air Test", flight_date: "2025-09-01", departure_airport: "JFK", arrival_airport: "LAX", status: "On Time" },
+        ];
+        localStorage.setItem("flights", JSON.stringify(flights));
+
+        render(<FlightSearch />);
+        expect(screen.getByText(/AB123 - Air Test/i)).toBeInTheDocument();
+
+        fireEvent.click(screen.getByTestId("delete-btn"));
+
+        expect(screen.queryByText(/AB123 - Air Test/i)).not.toBeInTheDocument();
+        expect(localStorage.getItem("flights")).not.toContain("AB123");
     });
 });

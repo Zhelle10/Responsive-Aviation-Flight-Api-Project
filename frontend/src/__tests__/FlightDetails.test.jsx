@@ -1,46 +1,54 @@
 import { render, screen } from "@testing-library/react";
 import FlightDetails from "../components/FlightDetails";
-import { describe, it, expect } from "vitest";
 
-describe("FlightDetails Component", () => {
-    it("renders nothing when no flight is provided", () => {
+describe("<FlightDetails />", () => {
+    it("renders nothing when flight is null", () => {
         const { container } = render(<FlightDetails flight={null} />);
         expect(container.firstChild).toBeNull();
     });
 
     it("renders flight details when flight data is provided", () => {
         const mockFlight = {
-            flight_number: "NZ6025",
-            airline: "Air New Zealand",
-            departure_airport: "AKL",
-            arrival_airport: "WLG",
-            status: "active",
-            flight_date: "2025-08-18",
+            flight_number: "AB123",
+            airline: "Air Test",
+            departure_airport: "JFK",
+            arrival_airport: "LAX",
+            status: "On Time",
+            flight_date: "2025-09-01",
         };
 
         render(<FlightDetails flight={mockFlight} />);
 
         expect(screen.getByText("Flight Details")).toBeInTheDocument();
-        expect(screen.getByText(/NZ6025/)).toBeInTheDocument();
-        expect(screen.getByText(/Air New Zealand/)).toBeInTheDocument();
-        expect(screen.getByText(/AKL/)).toBeInTheDocument();
-        expect(screen.getByText(/WLG/)).toBeInTheDocument();
-        expect(screen.getByText(/active/)).toBeInTheDocument();
-        expect(screen.getByText(/2025-08-18/)).toBeInTheDocument();
+        expect(screen.getByText(/AB123/)).toBeInTheDocument();
+        expect(screen.getByText(/Air Test/)).toBeInTheDocument();
+        expect(screen.getByText(/JFK/)).toBeInTheDocument();
+        expect(screen.getByText(/LAX/)).toBeInTheDocument();
+        expect(screen.getByText(/On Time/)).toBeInTheDocument();
+        expect(screen.getByText(/2025-09-01/)).toBeInTheDocument();
     });
 
-    it("renders N/A for missing fields", () => {
-        const incompleteFlight = {
-            flight_number: "",
-            airline: "",
-            departure_airport: "",
-            arrival_airport: "",
-            status: "",
-            flight_date: "",
-        };
+    it("renders N/A when fields are missing", () => {
+        const mockFlight = {}; // no fields
 
-        render(<FlightDetails flight={incompleteFlight} />);
+        render(<FlightDetails flight={mockFlight} />);
 
-        expect(screen.getAllByText("N/A")).toHaveLength(6);
+        const flightNumberP = screen.getByText(/Flight Number:/).closest("p");
+        expect(flightNumberP).toHaveTextContent("Flight Number: N/A");
+
+        const airlineP = screen.getByText(/Airline:/).closest("p");
+        expect(airlineP).toHaveTextContent("Airline: N/A");
+
+        const departureP = screen.getByText(/Departure:/).closest("p");
+        expect(departureP).toHaveTextContent("Departure: N/A");
+
+        const arrivalP = screen.getByText(/Arrival:/).closest("p");
+        expect(arrivalP).toHaveTextContent("Arrival: N/A");
+
+        const statusP = screen.getByText(/Status:/).closest("p");
+        expect(statusP).toHaveTextContent("Status: N/A");
+
+        const dateP = screen.getByText(/Date:/).closest("p");
+        expect(dateP).toHaveTextContent("Date: N/A");
     });
 });

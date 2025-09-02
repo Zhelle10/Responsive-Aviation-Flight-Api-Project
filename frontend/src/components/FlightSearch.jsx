@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import DeleteFlightButton from "./DeleteFlightButton";
+import DeleteFlightButton from "../components/DeleteFlightButton";
 import "../styles/FlightSearch.css";
 
 export default function FlightSearch() {
@@ -7,15 +7,13 @@ export default function FlightSearch() {
     const [searchDate, setSearchDate] = useState("");
     const [filteredFlights, setFilteredFlights] = useState([]);
 
-    const normalizeDate = (date) => (date?.includes("T") ? date.split("T")[0] : date);
+    const normalizeDate = (date) => (date?.includes("T") ? date.split("T")[0] : date || "");
 
-    // Load flights from localStorage
     const loadFlights = () => {
         const savedFlights = JSON.parse(localStorage.getItem("flights")) || [];
         return savedFlights.map((f) => ({ ...f, flight_date: normalizeDate(f.flight_date) }));
     };
 
-    // Filter flights based on search inputs
     const handleSearch = (e) => {
         if (e) e.preventDefault();
         let results = loadFlights();
@@ -33,7 +31,6 @@ export default function FlightSearch() {
         setFilteredFlights(results);
     };
 
-    // Delete flight
     const handleDelete = (flightToDelete) => {
         let savedFlights = loadFlights();
         savedFlights = savedFlights.filter(
@@ -44,10 +41,9 @@ export default function FlightSearch() {
                 )
         );
         localStorage.setItem("flights", JSON.stringify(savedFlights));
-        handleSearch(); // Refresh filtered list
+        handleSearch();
     };
 
-    // Load flights on mount
     useEffect(() => {
         handleSearch();
     }, []);
@@ -55,23 +51,31 @@ export default function FlightSearch() {
     return (
         <>
             <h2>Search Saved Flights</h2>
-            <form className="flight-search-form" onSubmit={handleSearch}>
+            <form
+                className="flight-search-form"
+                onSubmit={handleSearch}
+                aria-label="flight search form"
+            >
+                <label htmlFor="flight-number" className="visually-hidden">Flight Number</label>
                 <input
+                    id="flight-number"
                     type="text"
                     placeholder="Flight Number"
                     value={searchNumber}
                     onChange={(e) => setSearchNumber(e.target.value)}
                     className="flight-search-input"
                 />
+
+                <label htmlFor="flight-date" className="visually-hidden">Date</label>
                 <input
+                    id="flight-date"
                     type="date"
                     value={searchDate}
                     onChange={(e) => setSearchDate(e.target.value)}
                     className="flight-search-date"
                 />
-                <button type="submit" className="flight-search-button">
-                    Search
-                </button>
+
+                <button type="submit" className="flight-search-button">Search</button>
             </form>
 
             <h3>Saved Flights:</h3>

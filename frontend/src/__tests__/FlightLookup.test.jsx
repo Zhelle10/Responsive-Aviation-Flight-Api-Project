@@ -1,89 +1,101 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import FlightLookup from "../components/FlightLookup.jsx";
-import { vi } from "vitest";
+import FlightLookup from "../components/FlightLookup";
 
-describe("FlightLookup Component", () => {
-    let mockSetFlight, mockSetError, mockSetLoading;
+global.fetch = vi.fn();
+
+describe("<FlightLookup />", () => {
+    let setFlight, setError, setLoading;
 
     beforeEach(() => {
-        // Create fresh mock functions before each test
-        mockSetFlight = vi.fn();
-        mockSetError = vi.fn();
-        mockSetLoading = vi.fn();
+        setFlight = vi.fn();
+        setError = vi.fn();
+        setLoading = vi.fn();
+        localStorage.clear();
+        fetch.mockReset();
     });
 
     it("renders input and button", () => {
         render(
             <FlightLookup
-                setFlight={mockSetFlight}
-                setError={mockSetError}
-                setLoading={mockSetLoading}
+                setFlight={setFlight}
+                setError={setError}
+                setLoading={setLoading}
             />
         );
 
-        expect(
-            screen.getByPlaceholderText(/Enter flight number/i)
-        ).toBeInTheDocument();
+        expect(screen.getByPlaceholderText(/Enter flight number/i)).toBeInTheDocument();
         expect(screen.getByRole("button", { name: /Search/i })).toBeInTheDocument();
     });
 
-    it("shows error if submitting empty input", () => {
+    it("shows error when submitting empty input", () => {
         render(
             <FlightLookup
-                setFlight={mockSetFlight}
-                setError={mockSetError}
-                setLoading={mockSetLoading}
+                setFlight={setFlight}
+                setError={setError}
+                setLoading={setLoading}
             />
         );
 
-        fireEvent.click(screen.getByRole("button", { name: /Search/i }));
-
-        expect(mockSetError).toHaveBeenCalledWith("Please enter a flight number");
+        fireEvent.submit(screen.getByRole("form", { name: /flight lookup form/i }));
+        expect(setError).toHaveBeenCalledWith("Please enter a flight number");
     });
 
-    it("fetches flight data successfully", async () => {
-        // Mock fetch to return fake flight data
-        global.fetch = vi.fn(() =>
-            Promise.resolve({
-                ok: true,
-                json: () =>
-                    Promise.resolve({
-                        message: "Flight saved",
-                        flight: {
-                            flight_number: "NZ6025",
-                            airline: "Air New Zealand",
-                            status: "active",
-                        },
-                    }),
-            })
-        );
+    it("fetches flight successfully", async () => {
+        const mockFlight = {
+            flight_number: "PR123",
+            airline: "TestAir",
+            flight_date: "2025-09-01T00:00:00Z",
+        };
+
+        fetch.mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({ flight: mockFlight }),
+        });
 
         render(
             <FlightLookup
-                setFlight={mockSetFlight}
-                setError={mockSetError}
-                setLoading={mockSetLoading}
+                setFlight={setFlight}
+                setError={setError}
+                setLoading={setLoading}
             />
         );
 
-        // Enter a flight number
         fireEvent.change(screen.getByPlaceholderText(/Enter flight number/i), {
-            target: { value: "NZ6025" },
+            target: { value: "PR123" },
         });
-
         fireEvent.click(screen.getByRole("button", { name: /Search/i }));
 
-        // Wait for fetch to resolve
-        await waitFor(() =>
-            expect(mockSetFlight).toHaveBeenCalledWith({
-                flight_number: "NZ6025",
-                airline: "Air New Zealand",
-                status: "active",
-            })
+        await waitFor(() => {
+            expect(setLoading).toHaveBeenCalledWith(true);
+            expect(setFlight).toHaveBeenCalledWith({
+                ...mockFlight,
+                flight_date: "2025-09-01",
+            });
+            expect(localStorage.getItem("flights")).toContain("PR123");
+        });
+    });
+
+    it("handles fetch error", async () => {
+        fetch.mockResolvedValueOnce({
+            ok: false,
+            json: async () => ({ error: { message: "Flight not found" } }),
+        });
+
+        render(
+            <FlightLookup
+                setFlight={setFlight}
+                setError={setError}
+                setLoading={setLoading}
+            />
         );
 
-        expect(global.fetch).toHaveBeenCalledWith(
-            "http://localhost:3001/fetch-flight/NZ6025"
-        );
+        fireEvent.change(screen.getByPlaceholderText(/Enter flight number/i), {
+            target: { value: "XX999" },
+        });
+        fireEvent.click(screen.getByRole("button", { name: /Search/i }));
+
+        await waitFor(() => {
+            expect(setError).toHaveBeenCalledWith("Flight not found");
+        });
     });
 });

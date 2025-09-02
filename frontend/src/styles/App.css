@@ -1,7 +1,4 @@
-body {
-   background-color: #e5e6e8;
-   margin-top: 5rem;
-}
+
 
 /* General app container */
 .app-container {
@@ -9,7 +6,7 @@ body {
     margin: 0 auto;
     padding: 1rem;
     font-family: Arial, sans-serif;
-    background-color: white;
+    background-color: #BBDCE5;
     border-radius: 1.5rem;
     border: rgb(74, 74, 84) solid 3px;
 }
